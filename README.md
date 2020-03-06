@@ -9,7 +9,10 @@ MIT Licensed.
 SmallSuiteGenerator can be used to discover bugs in the code, because it generates automatically test cases
 
 ## Installation 
-You can load SmallSuiteGenerator into Pharo image executing the following code in the playground:
+
+### Pharo
+
+To install the latest stable version of SmallSuiteGenerator in a Pharo image, execute the following code:
 
 ```Smalltalk
 Metacello new
@@ -17,19 +20,35 @@ Metacello new
  repository: 'github://OBJECTSEMANTICS/SmallSuiteGenerator:master/src';
  load.
 ```
+To install the version that presents graphic results of the coverage's evolution, execute the following code:
+
+```Smalltalk
+Metacello new
+ baseline:'SmallSuiteGenerator';
+ repository: 'github://OBJECTSEMANTICS/SmallSuiteGenerator:master/src';
+ load: #('All').
+```
+
+### VisualWorks
+
+You can load SmallSuiteGenerator into VW image with the next steps:
+
+- Clone or download Parcels8.3/SmallSuiteWithSpyLite directory of this project
+- Load parcel SmallSuiteGenerator-Extensions.pcl
 
 ## Configuration
 
 The first step is to define the code block that will be instrumented to get the typeInfo. Define package's regular expression pattern also.
 
 ``` Smalltalk
-| typeinfo |
-typeInfo := SSTypeCollector profile:[ 
-		(SSTeacher name: 'Ann' with: 50)
-		nickname;
-		canRegister: ((SConference price: 50) offerPrice: 50);
-		idTeacher;
-		yearsWorkExperience ] onPackagesMatching: 'SmallSuiteGenerator-Scenario'.
+| typeInfo |
+typeInfo := STypeInfo asTypeInfo: (
+		SSTypeCollector profile:[ 
+			(SSTeacher name: 'Ann' with: 50)
+			nickname;
+			canRegister: ((SConference price: 50) offerPrice: 50);
+			idTeacher;
+			yearsWorkExperience ] onPackagesMatching: 'SmallSuiteGenerator-Scenario').
 ```
 
 The second step is to configure the class `STestCaseFactory`.
@@ -44,7 +63,6 @@ STestCaseFactoryPharo new
     numberOfGenerations: 20;
     numberOfStatements: 3;
     createTestCases;
-    visualize;
     yourself.
 ```
 				
@@ -64,3 +82,7 @@ Additionally to the described configurations, you can configure some parameters 
 ```Smalltalk 
 populationSize: 30.
 ```
+
+## Install SpyLite
+
+See documentation in [Install SpyLite](Parcels8.3/INSTALL_SPYLITE.md)

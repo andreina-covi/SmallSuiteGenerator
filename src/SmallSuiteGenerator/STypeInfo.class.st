@@ -21,6 +21,16 @@ Class {
 	#category : #'SmallSuiteGenerator-Info'
 }
 
+{ #category : #converting }
+STypeInfo class >> asTypeInfo: aTypeCollector [
+	^ self new asTypeInfo: aTypeCollector 
+]
+
+{ #category : #converting }
+STypeInfo class >> asTypeInfo: aTypeCollector methodsBlacklist: aList [
+	^ self new asTypeInfo: aTypeCollector methodsBlacklist: aList
+]
+
 { #category : #comparing }
 STypeInfo >> = other [
 	^ self class = other class
@@ -42,13 +52,36 @@ STypeInfo >> accessMessagesFrom: aClassName [
 
 { #category : #adding }
 STypeInfo >> addClassInfo: aTypeClassInfo [
-	"aTypeClassInfo typeInfo: self."
-
 	types
 		at: aTypeClassInfo typeName
 		ifPresent: [ :aTypeClass | aTypeClass joinWith: aTypeClassInfo ]
-		ifAbsentPut:[ aTypeClassInfo].
+		ifAbsentPut: [ aTypeClassInfo ].
 	self joinScalars: aTypeClassInfo scalars
+]
+
+{ #category : #converting }
+STypeInfo >> asTypeInfo: aTypeCollector [
+	| typeInfo |
+	typeInfo := self class new.
+	aTypeCollector allClasses
+		do: [ :aSpyClass | 
+			(aSpyClass className endsWith: 'BlockClosure')
+				ifFalse: [ typeInfo addClassInfo: (STypeClassInfo asClassInfo: aSpyClass) ] ].
+	typeInfo joinScalars: aTypeCollector scalars copy.
+	^ typeInfo
+]
+
+{ #category : #converting }
+STypeInfo >> asTypeInfo: aTypeCollector methodsBlacklist: aList [
+	| typeInfo |
+	typeInfo := self class new.
+	aTypeCollector allClasses
+		do: [ :aSpyClass | 
+			aList select: [ :e | e origin name == aSpyClass className ] thenDo: [:e | aSpyClass removeMethod: e ].
+			(aSpyClass className endsWith: 'BlockClosure')
+				ifFalse: [ typeInfo addClassInfo: (STypeClassInfo asClassInfo: aSpyClass) ] ].
+	typeInfo joinScalars: aTypeCollector scalars copy.
+	^ typeInfo
 ]
 
 { #category : #accessing }
@@ -88,7 +121,7 @@ STypeInfo >> classes [
 { #category : #copying }
 STypeInfo >> copy [
 	| copy |
-	copy := STypeInfo new.
+	copy := self class new.
 	types
 		do: [ :aClassTypeInfo | copy addClassInfo: aClassTypeInfo copy ].
 	copy scalars: scalars copy.

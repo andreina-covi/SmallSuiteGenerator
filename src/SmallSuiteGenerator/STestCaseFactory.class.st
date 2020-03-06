@@ -36,11 +36,6 @@ STestCaseFactory >> classesForRegex: regexExpressions [
 ]
 
 { #category : #actions }
-STestCaseFactory >> cleanInstrumentation [
-	self subclassResponsibility
-]
-
-{ #category : #actions }
 STestCaseFactory >> createTestCases [
 	self checkInvariants.
 	self setUp.
@@ -226,7 +221,7 @@ STestCaseFactory >> targetPackageRegex: anObject [
 
 { #category : #actions }
 STestCaseFactory >> tearDown [
-	self cleanInstrumentation.
+	self uninstall.
 	self exportTests
 ]
 
@@ -240,6 +235,10 @@ STestCaseFactory >> typeInfo: aTypeInfo [
 	typeInfo := aTypeInfo
 ]
 
+{ #category : #actions }
+STestCaseFactory >> uninstall [
+]
+
 { #category : #visualization }
 STestCaseFactory >> visualize [
 	| p g d |
@@ -251,9 +250,8 @@ STestCaseFactory >> visualize [
 			connectColor: (p at: index);
 			noDot;
 			points: association value;
-			label: association key;
-			y: #yourself.
+			label: association key.
 		g add: d ].
 	g legend addText: 'Fitness evolution'.
-	g open
+	^ g
 ]
